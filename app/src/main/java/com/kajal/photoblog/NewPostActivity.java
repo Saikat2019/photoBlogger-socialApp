@@ -104,7 +104,7 @@ public class NewPostActivity extends AppCompatActivity {
 
                     final String randomName = UUID.randomUUID().toString();
 
-                    final StorageReference filePath = storageReference.child("post_images").child(randomName+"jpg");
+                    final StorageReference filePath = storageReference.child("post_images").child(randomName+".jpg");
                     filePath.putFile(postImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -175,7 +175,7 @@ public class NewPostActivity extends AppCompatActivity {
                     compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     final byte[] thumbData = baos.toByteArray();
 
-                    final StorageReference thumbPath = storageReference.child("post_images").child(randomName+"jpg");
+                    final StorageReference thumbPath = storageReference.child("post_images/thumbs").child(randomName+".jpg");
                     final String[] thumbUrl = new String[1];
                     Log.d(TAG, "onSuccess: 4");
                     thumbPath.putBytes(thumbData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
