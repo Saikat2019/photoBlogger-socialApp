@@ -2,7 +2,10 @@ package com.kajal.photoblog;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     private String current_user_id;
 
+    private BottomNavigationView mainBottomNav;
+
+    private HomeFragment homeFragment;
+    private NotificationFragment notificationFragment;
+    private AccountFragment accountFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,16 +51,48 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mainToolbar);
 
         getSupportActionBar().setTitle("Photo Blog");
+        if(mAuth.getCurrentUser() != null) {
 
-        addPostBtn = findViewById(R.id.add_post_btn);
+            mainBottomNav = findViewById(R.id.mainBottomNav);
 
-        addPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
-                startActivity(newPostIntent);
-            }
-        });
+            homeFragment = new HomeFragment();
+            notificationFragment = new NotificationFragment();
+            accountFragment = new AccountFragment();
+
+            initializeFragment();
+
+            mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
+                    switch (menuItem.getItemId()) {
+                        case R.id.bottom_action_home:
+                            replaceFragment(homeFragment,currentFragment);
+                            return true;
+                        case R.id.bottom_action_account:
+                            replaceFragment(accountFragment,currentFragment);
+                            return true;
+                        case R.id.bottom_action_notif:
+                            replaceFragment(notificationFragment,currentFragment);
+                            return true;
+                        default:
+                            return false;
+                    }
+
+                }
+            });
+
+            addPostBtn = findViewById(R.id.add_post_btn);
+
+            addPostBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
+                    startActivity(newPostIntent);
+                }
+            });
+        }
     }
 
     @Override
@@ -125,5 +166,50 @@ public class MainActivity extends AppCompatActivity {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(loginIntent);
         finish();
+    }
+
+    private void initializeFragment(){
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        fragmentTransaction.add(R.id.main_container, homeFragment);
+        fragmentTransaction.add(R.id.main_container, notificationFragment);
+        fragmentTransaction.add(R.id.main_container, accountFragment);
+
+        fragmentTransaction.hide(notificationFragment);
+        fragmentTransaction.hide(accountFragment);
+
+        fragmentTransaction.commit();
+
+    }
+
+    private void replaceFragment(Fragment fragment, Fragment currentFragment){
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if(fragment == homeFragment){
+
+            fragmentTransaction.hide(accountFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+
+        if(fragment == accountFragment){
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+
+        if(fragment == notificationFragment){
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(accountFragment);
+
+        }
+        fragmentTransaction.show(fragment);
+
+        //fragmentTransaction.replace(R.id.main_container, fragment);
+        fragmentTransaction.commit();
+
     }
 }

@@ -188,8 +188,8 @@ public class NewPostActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     thumbUrl[0] = uri.toString();
-                                    postMap.put("image_uri", image_url);
-                                    postMap.put("thumb_uri",thumbUrl[0]);
+                                    postMap.put("image_url", image_url);
+                                    postMap.put("image_thumb",thumbUrl[0]);
                                     postMap.put("desc",desc);
                                     postMap.put("user_id",current_user_id);
                                     postMap.put("timestamp",FieldValue.serverTimestamp());
